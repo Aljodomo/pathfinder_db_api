@@ -17,6 +17,19 @@ import transferModel.ShowData;
 @SpringBootApplication
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
+  
+    @GetMapping("/test")
+    public ShowData getShowData() {
+        ShowProgress sp = new ShowProgress("TESTUSER", "TESTSHOW", "TESTSEARCH", 69, 69, "DE",
+                new Timestamp(System.currentTimeMillis()));
+        Show s = new Show("TESTSEARCH", "bs.to", "ss.to", "fm.to", new Timestamp(System.currentTimeMillis()));
+        Host h = new Host("TESTUSER", "TESTSHOW", "TESTHOST");
+        ArrayList<Host> list = new ArrayList<Host>();
+        list.add(h);
+        
+        ShowData sd = new ShowData(sp, s, list);
+        return sd;
+    }
 
 	@GetMapping("/showData")
 	public ShowData getShowData(@RequestParam(value = "username") String username,
@@ -52,10 +65,6 @@ public class RestController {
 		alist.add(sd3);
 		
 		return alist;
-	}
-	
-	public static void main(String[] args) {
-		SpringApplication.run(RestController.class, args);
 	}
 	
 }
