@@ -9,120 +9,130 @@ import javax.persistence.*;
 @IdClass(Host.IDClass.class)
 public class Host {
 
-	@Column(name = "users_username")
-	@Id
-	private String username;
+  // @Column(name = "users_username")
+  // @Id
+  // private String username;
+  //
+  // @Column(name = "displayed_title")
+  // @Id
+  // private String displayedTitle;
 
-	@Column(name = "displayed_title")
-	@Id
-	private String displayedTitle;
+  @ManyToOne
+  @JoinColumns({@JoinColumn(name = "users_username", referencedColumnName = "owner"),
+      @JoinColumn(name = "displayed_title", referencedColumnName = "displayed_title")})
+  @Id
+  private ShowProgress showProgress;
 
-	@Column(name = "host")
-	@Id
-	private String hostName;
+  @Column(name = "host_name")
+  @Id
+  private String hostName;
+  
+  
+  public Host(ShowProgress showProgress, String hostName) {
+    super();
+    this.showProgress = showProgress;
+    this.hostName = hostName;
+  }
+  
+  public Host() {
+    super();
+  }
 
-	static class IDClass implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private String username;
-		private String displayedTitle;
-		private String hostName;
+  public ShowProgress getShowProgress() {
+    return showProgress;
+  }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			IDClass other = (IDClass) obj;
-			if (displayedTitle == null) {
-				if (other.displayedTitle != null)
-					return false;
-			} else if (!displayedTitle.equals(other.displayedTitle))
-				return false;
-			if (hostName == null) {
-				if (other.hostName != null)
-					return false;
-			} else if (!hostName.equals(other.hostName))
-				return false;
-			if (username == null) {
-				if (other.username != null)
-					return false;
-			} else if (!username.equals(other.username))
-				return false;
-			return true;
-		}
+  public void setShowProgress(ShowProgress showProgress) {
+    this.showProgress = showProgress;
+  }
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((displayedTitle == null) ? 0 : displayedTitle.hashCode());
-			result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
-			result = prime * result + ((username == null) ? 0 : username.hashCode());
-			return result;
-		}
-	}
+  public String getHostName() {
+    return hostName;
+  }
 
-	
-	public Host(String username, String displayedTitle, String hostName) {
-		super();
-		this.username = username;
-		this.displayedTitle = displayedTitle;
-		this.hostName = hostName;
-	}
+  public void setHostName(String hostName) {
+    this.hostName = hostName;
+  }
+  
 
-	public String getUsername() {
-		return username;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
+    result = prime * result + ((showProgress == null) ? 0 : showProgress.hashCode());
+    return result;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Host other = (Host) obj;
+    if (hostName == null) {
+      if (other.hostName != null)
+        return false;
+    } else if (!hostName.equals(other.hostName))
+      return false;
+    if (showProgress == null) {
+      if (other.showProgress != null)
+        return false;
+    } else if (!showProgress.equals(other.showProgress))
+      return false;
+    return true;
+  }
 
-	public String getDisplayedTitle() {
-		return displayedTitle;
-	}
 
-	public void setDisplayedTitle(String displayedTitle) {
-		this.displayedTitle = displayedTitle;
-	}
+  public static class IDClass implements Serializable{
+    private static final long serialVersionUID = 1L;
+    private ShowProgress showProgress;
+    private String hostName;
+    
+    public IDClass(ShowProgress showProgress, String hostName) {
+      super();
+      this.showProgress = showProgress;
+      this.hostName = hostName;
+    }
+    
+    public IDClass() {
+      super();
+    }
 
-	public String getHostName() {
-		return hostName;
-	}
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
+      result = prime * result + ((showProgress == null) ? 0 : showProgress.hashCode());
+      return result;
+    }
 
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
-
-	public boolean exactEqual(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Host other = (Host) obj;
-		if (displayedTitle == null) {
-			if (other.displayedTitle != null)
-				return false;
-		} else if (!displayedTitle.equals(other.displayedTitle))
-			return false;
-		if (hostName == null) {
-			if (other.hostName != null)
-				return false;
-		} else if (!hostName.equals(other.hostName))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
-	}
-
-	
-	
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      IDClass other = (IDClass) obj;
+      if (hostName == null) {
+        if (other.hostName != null)
+          return false;
+      } else if (!hostName.equals(other.hostName))
+        return false;
+      if (showProgress == null) {
+        if (other.showProgress != null)
+          return false;
+      } else if (!showProgress.equals(other.showProgress))
+        return false;
+      return true;
+    }
+    
+  }
+  
 }

@@ -3,7 +3,10 @@ package api;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.annotation.PreDestroy;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,59 +15,55 @@ import org.springframework.web.bind.annotation.RequestParam;
 import dbModel.Host;
 import dbModel.Show;
 import dbModel.ShowProgress;
+import dbModel.User;
 import transferModel.ShowData;
 
 @SpringBootApplication
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
+  public static EntityManagerFactory FACTORY;
+  public static EntityManager ENTITY_MANAGER;
+
+  @PreDestroy
+  public void destroy() {
+    FACTORY.close();
+    ENTITY_MANAGER.close();
+  }
+
+  @GetMapping("/exampleShowData")
+  public ShowData getExampleShowData() {
+    User u = new User("TestUser");
+
+    Show s = new Show("TestSearchTitle", "test.com", "test.com", "test.com",
+        new Timestamp(System.currentTimeMillis() - 1000000));
+
+    ShowProgress sp = new ShowProgress(u, "TestDisTitle", s, 69, 69, "DE",
+        new Timestamp(System.currentTimeMillis()));
+
+    ShowData sd = new ShowData(sp);
+    return sd;
+  }
   
-    @GetMapping("/test")
-    public ShowData getShowData() {
-        ShowProgress sp = new ShowProgress("TESTUSER", "TESTSHOW", "TESTSEARCH", 69, 69, "DE",
-                new Timestamp(System.currentTimeMillis()));
-        Show s = new Show("TESTSEARCH", "bs.to", "ss.to", "fm.to", new Timestamp(System.currentTimeMillis()));
-        Host h = new Host("TESTUSER", "TESTSHOW", "TESTHOST");
-        ArrayList<Host> list = new ArrayList<Host>();
-        list.add(h);
-        
-        ShowData sd = new ShowData(sp, s, list);
-        return sd;
+  @GetMapping("/testDBConnection")
+  public User getExampleUser(){
+    User u = ENTITY_MANAGER.find(User.class, "aljodomo");
+    return u;
+  }
+
+  @GetMapping("/showData")
+  public ShowData getShowData(@RequestParam(value = "username") String username,
+      @RequestParam(value = "displayed_title") String displayedTitle) {
+    return null;
+  }
+
+  @GetMapping("/allShowData")
+  public List<ShowData> getAllShowData(@RequestParam(value = "username") String username) {
+    User u = ENTITY_MANAGER.find(User.class, username);
+    ArrayList<ShowData> list = new ArrayList<ShowData>();
+    for(ShowProgress p : u.getData()) {
+      list.add(new ShowData(p));
     }
+    return list;
+  }
 
-	@GetMapping("/showData")
-	public ShowData getShowData(@RequestParam(value = "username") String username,
-			@RequestParam(value = "password") String password, @RequestParam(value = "displayed_title") String displayedTitle) {
-		ShowProgress sp = new ShowProgress("TESTUSER", "TESTSHOW", "TESTSEARCH", 69, 69, "DE",
-				new Timestamp(System.currentTimeMillis()));
-		Show s = new Show("TESTSEARCH", "bs.to", "ss.to", "fm.to", new Timestamp(System.currentTimeMillis()));
-		Host h = new Host("TESTUSER", "TESTSHOW", "TESTHOST");
-		ArrayList<Host> list = new ArrayList<Host>();
-		list.add(h);
-		
-		ShowData sd = new ShowData(sp, s, list);
-		return sd;
-	}
-
-	@GetMapping("/allShowData")
-	public List<ShowData> getAllShowData(@RequestParam(value = "username") String username,
-			@RequestParam(value = "password") String password) {
-		ShowProgress sp = new ShowProgress("TESTUSER", "TESTSHOW", "TESTSEARCH", 69, 69, "DE",
-				new Timestamp(System.currentTimeMillis()));
-		Show s = new Show("TESTSEARCH", "bs.to", "ss.to", "fm.to", new Timestamp(System.currentTimeMillis()));
-		Host h = new Host("TESTUSER", "TESTSHOW", "TESTHOST");
-		ArrayList<Host> list = new ArrayList<Host>();
-		list.add(h);
-		
-		ShowData sd1 = new ShowData(sp, s, list);
-		ShowData sd2 = new ShowData(sp, s, list);
-		ShowData sd3 = new ShowData(sp, s, list);
-		
-		ArrayList<ShowData> alist = new ArrayList<ShowData>();
-		alist.add(sd1);
-		alist.add(sd2);
-		alist.add(sd3);
-		
-		return alist;
-	}
-	
 }

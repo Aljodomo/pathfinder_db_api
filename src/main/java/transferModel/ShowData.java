@@ -5,148 +5,135 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.hibernate.mapping.Set;
 import dbModel.Host;
 import dbModel.Show;
 import dbModel.ShowProgress;
+import dbModel.User;
 
 public class ShowData {
-	public static SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  public static SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	private final String username;
-	private final String displayedTitle;
-	private final String searchTitle;
-	private final String bsURL;
-	private final String ssURL;
-	private final String fmURL;
-	private final String URLCreationTimestamp;
-	private final int season;
-	private final int episode;
-	private final String languageTag;
-	private final String lastUseTimestamp;
-	private final List<String> favoriteHosts;
+  private final String username;
+  private final String displayedTitle;
+  private final String searchTitle;
+  private final String bsURL;
+  private final String ssURL;
+  private final String fmURL;
+  private final Timestamp URLCreationTimestamp;
+  private final int season;
+  private final int episode;
+  private final String languageTag;
+  private final Timestamp lastUseTimestamp;
+  private final List<String> favoriteHosts;
 
-	public ShowData(ShowProgress showProgress, Show show, List<Host> hosts) {
-		this.username = showProgress.getOwner();
-		this.displayedTitle = showProgress.getDisplayedTitle();
-		this.searchTitle = show.getSearchTitle();
-		this.bsURL = show.getBs();
-		this.ssURL = show.getSs();
-		this.fmURL = show.getFm();
-		this.URLCreationTimestamp = ShowData.TIMESTAMP_FORMAT.format(show.getTimestamp());
-		this.season = showProgress.getSeason();
-		this.episode = showProgress.getEpisode();
-		this.languageTag = showProgress.getLanguageTag();
-		this.lastUseTimestamp = ShowData.TIMESTAMP_FORMAT.format(showProgress.getTimestamp());
-		this.favoriteHosts = new ArrayList<String>();
-		for (Host h : hosts) {
-			this.favoriteHosts.add(h.getHostName());
-		}
-	}
+  public ShowData(ShowProgress showProgress) {
+    this.username = showProgress.getOwner().getUsername();
+    this.displayedTitle = showProgress.getDisplayedTitle();
+    this.searchTitle = showProgress.getShow().getSearchTitle();
+    this.bsURL = showProgress.getShow().getBs();
+    this.ssURL = showProgress.getShow().getSs();
+    this.fmURL = showProgress.getShow().getFm();
+    this.URLCreationTimestamp = showProgress.getShow().getTimestamp();
+    this.season = showProgress.getSeason();
+    this.episode = showProgress.getEpisode();
+    this.languageTag = showProgress.getLanguageTag();
+    this.lastUseTimestamp = showProgress.getTimestamp();
+    this.favoriteHosts = new ArrayList<String>();
+    if(showProgress.getHosts() != null) {
+      for (Host h : showProgress.getHosts()) {
+        this.favoriteHosts.add(h.getHostName());
+      }
+    }
+  }
 
-	public ShowData(String username, String displayedTitle, String searchTitle, String bsURL, String ssURL,
-			String fmURL, String uRLCreationTimestamp, int season, int episode, String languageTag,
-			String lastUseTimestamp, List<String> favoriteHosts) {
-		super();
-		this.username = username;
-		this.displayedTitle = displayedTitle;
-		this.searchTitle = searchTitle;
-		this.bsURL = bsURL;
-		this.ssURL = ssURL;
-		this.fmURL = fmURL;
-		URLCreationTimestamp = uRLCreationTimestamp;
-		this.season = season;
-		this.episode = episode;
-		this.languageTag = languageTag;
-		this.lastUseTimestamp = lastUseTimestamp;
-		this.favoriteHosts = favoriteHosts;
-	}
-	
-	public ShowProgress toShowProgress() {
-		ShowProgress sp = null;
-		try {
-			sp = new ShowProgress(this.username, this.displayedTitle, this.searchTitle, this.season, this.episode,
-					this.languageTag, new Timestamp(TIMESTAMP_FORMAT.parse(this.lastUseTimestamp).getTime()));
-		} catch (ParseException e) {
-			System.err
-					.println("Timestamp parsing error while converting ShowData to ShowProgress. Now is set to null.");
-			sp = new ShowProgress(this.username, this.displayedTitle, this.searchTitle, this.season, this.episode,
-					this.languageTag, null);
-		}
+  public ShowData(String username, String displayedTitle, String searchTitle, String bsURL,
+      String ssURL, String fmURL, Timestamp URLCreationTimestamp, int season, int episode,
+      String languageTag, Timestamp lastUseTimestamp, List<String> favoriteHosts) {
+    super();
+    this.username = username;
+    this.displayedTitle = displayedTitle;
+    this.searchTitle = searchTitle;
+    this.bsURL = bsURL;
+    this.ssURL = ssURL;
+    this.fmURL = fmURL;
+    this.URLCreationTimestamp = URLCreationTimestamp;
+    this.season = season;
+    this.episode = episode;
+    this.languageTag = languageTag;
+    this.lastUseTimestamp = lastUseTimestamp;
+    this.favoriteHosts = favoriteHosts;
+  }
 
-		return sp;
-	}
+  public ShowProgress toShowProgress() {
+    
+    User u = new User(this.username);
+    
+    Show s = new Show(this.searchTitle, this.bsURL, this.ssURL, this.fmURL, this.URLCreationTimestamp);
+    
+    ShowProgress sp = new ShowProgress(u, this.displayedTitle, s, this.season, this.episode, this.languageTag, this.lastUseTimestamp);
+    
+    return sp;
+  }
+  
+  
+  public List<Host> getHosts(ShowProgress showProgress){
+    ArrayList<Host> list = new ArrayList<Host>();
+    for(String hostName : this.favoriteHosts) {
+      if(hostName != null && !hostName.equals("")) {
+        Host h = new Host(showProgress, hostName);
+        list.add(h);
+      }
+    }
+    return list;
+  }
 
-	public Show toShow() {
-		Show s = null;
-		try {
-			s = new Show(this.searchTitle, this.bsURL, this.ssURL, this.fmURL,
-					new Timestamp(TIMESTAMP_FORMAT.parse(this.URLCreationTimestamp).getTime()));
-		} catch (ParseException e) {
-			System.err.println("Timestamp parsing error while converting ShowData to Show. Now is set to null.");
-			s = new Show(this.searchTitle, this.bsURL, this.ssURL, this.fmURL, null);
+  public String getUsername() {
+    return username;
+  }
 
-		}
-		return s;
-	}
+  public String getDisplayedTitle() {
+    return displayedTitle;
+  }
 
-	public List<Host> toHosts() {
-		ArrayList<Host> list = new ArrayList<Host>();
-		if (this.favoriteHosts != null && this.favoriteHosts.size() > 0) {
-			for (String host : this.favoriteHosts) {
-				Host h = new Host(this.username, this.displayedTitle, host);
-				list.add(h);
-			}
-		}
-		return list;
-	}
+  public String getSearchTitle() {
+    return searchTitle;
+  }
 
-	public String getUsername() {
-		return username;
-	}
+  public String getBsURL() {
+    return bsURL;
+  }
 
-	public String getDisplayedTitle() {
-		return displayedTitle;
-	}
+  public String getSsURL() {
+    return ssURL;
+  }
 
-	public String getSearchTitle() {
-		return searchTitle;
-	}
+  public String getFmURL() {
+    return fmURL;
+  }
 
-	public String getBsURL() {
-		return bsURL;
-	}
+  public Timestamp getURLCreationTimestamp() {
+    return URLCreationTimestamp;
+  }
 
-	public String getSsURL() {
-		return ssURL;
-	}
+  public int getSeason() {
+    return season;
+  }
 
-	public String getFmURL() {
-		return fmURL;
-	}
+  public int getEpisode() {
+    return episode;
+  }
 
-	public String getURLCreationTimestamp() {
-		return URLCreationTimestamp;
-	}
+  public String getLanguageTag() {
+    return languageTag;
+  }
 
-	public int getSeason() {
-		return season;
-	}
+  public Timestamp getLastUseTimestamp() {
+    return lastUseTimestamp;
+  }
 
-	public int getEpisode() {
-		return episode;
-	}
-
-	public String getLanguageTag() {
-		return languageTag;
-	}
-
-	public String getLastUseTimestamp() {
-		return lastUseTimestamp;
-	}
-
-	public List<String> getFavoriteHosts() {
-		return favoriteHosts;
-	}
+  public List<String> getFavoriteHosts() {
+    return favoriteHosts;
+  }
 
 }

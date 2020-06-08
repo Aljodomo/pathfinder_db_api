@@ -6,8 +6,8 @@
     <persistence-unit name="Pathfinder">
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/pathfinder" />
-            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://192.168.1.107:3306/pathfinder" />
+            <property name="javax.persistence.jdbc.user" value="pathfinder_client" />
             <property name="javax.persistence.jdbc.password" value="fimadmin" />
             
             <property name="hibernate.show_sql" value="true" />

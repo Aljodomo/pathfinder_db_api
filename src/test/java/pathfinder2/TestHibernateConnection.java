@@ -44,9 +44,8 @@ public class TestHibernateConnection {
 			man.persist(s);
 			
 			Show sn = man.find(Show.class, "TestCaseHibernateAddShow");
-			if(sn == null) {
-				fail("HibernateAddShow");
-			}
+			assertNotNull(sn);
+			assertEquals("TestCaseHibernateAddShow", sn.getSearchTitle());
 			
 			man.getTransaction().rollback();
 			man.close();
