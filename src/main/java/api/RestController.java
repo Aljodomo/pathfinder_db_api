@@ -49,6 +49,17 @@ public class RestController {
     User u = ENTITY_MANAGER.find(User.class, "aljodomo");
     return u;
   }
+  
+  /**
+   * Returns a basic feature1 String
+   * 
+   * @return Static text
+   */
+  @GetMapping("/feature1")
+  @Deprecated
+  public String getFeature1(){
+    return "Feature1";
+  }
 
   @GetMapping("/showData")
   public ShowData getShowData(@RequestParam(value = "username") String username,
