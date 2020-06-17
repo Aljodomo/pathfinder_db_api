@@ -56,6 +56,7 @@ public class RestController {
    * @return Static text
    */
   @GetMapping("/feature1")
+  @Deprecated
   public String getFeature1(){
     return "Feature1";
   }
