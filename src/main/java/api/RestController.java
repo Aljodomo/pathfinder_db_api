@@ -50,6 +50,11 @@ public class RestController {
     return u;
   }
   
+  /**
+   * Returns a basic feature1 String
+   * 
+   * @return Static text
+   */
   @GetMapping("/feature1")
   public String getFeature1(){
     return "Feature1";
