@@ -49,6 +49,11 @@ public class RestController {
     User u = ENTITY_MANAGER.find(User.class, "aljodomo");
     return u;
   }
+  
+  @GetMapping("/feature1")
+  public String getFeature1(){
+    return "Feature1";
+  }
 
   @GetMapping("/showData")
   public ShowData getShowData(@RequestParam(value = "username") String username,
